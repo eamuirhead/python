@@ -1,104 +1,192 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+# CSC 111, Lab 9 starter-code
+# Author: Sara Mathieson (modified from Lab 8 solution)
+# Author: Elizabeth Muirhead and Maddy Kulke
+# A program to draw a fractal tree using recursion.
 
-# C extensions
-*.so
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+from graphics import *
+import math
+import random
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+#---------
+# GLOBALS
+#---------
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
 
-# Translations
-*.mo
-*.pot
+theta = 0.7 # angle of each branch away from its trunk
+petal_color = "magenta4" # color of the petals
+center_color = "yellow" # color of the center of the flower
+sky_color = "light pink" # color of the sky/background
+ground_color = "dark green" # color of the ground
+branch_color = "navy" # color of the branches
+flower_lst = [] #global 
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
 
-# Flask stuff:
-instance/
-.webassets-cache
 
-# Scrapy stuff:
-.scrapy
+#---------
+# CLASSES
+#---------
 
-# Sphinx documentation
-docs/_build/
 
-# PyBuilder
-target/
+# TODO: create Flower class here
 
-# Jupyter Notebook
-.ipynb_checkpoints
+class Flower:
+    def __init__(self, x, y): #constructor #initializes instance variable
 
-# pyenv
-.python-version
 
-# celery beat schedule file
-celerybeat-schedule
+        # make a yellow center for the flower
+        center = Circle(Point(x,y),2)
+        center.setFill(center_color)
+        center.setOutline(center_color)
 
-# SageMath parsed files
-*.sage.py
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
 
-# Spyder project settings
-.spyderproject
-.spyproject
 
-# Rope project settings
-.ropeproject
+        # set petal length and pick a random orientation for the flower
+        petal_len = 18
 
-# mkdocs documentation
-/site
+        angle = random.uniform(0,2*math.pi)
+        
+        # make four petals using helper function
+        petal1 = self.make_petal(x, y, petal_len,angle)
+        petal2 = self.make_petal(x, y, petal_len,angle+math.pi/2)
+        petal3 = self.make_petal(x, y, petal_len,angle+math.pi)
+        petal4 = self.make_petal(x, y, petal_len,angle+3*math.pi/2)
 
-# mypy
-.mypy_cache/
+        self.part_lst = [center, petal1, petal2, petal3, petal4]
+
+
+
+    def make_petal(self, x, y, length, angle):
+        
+       
+        
+        # first point closest to the center
+        p1 = Point(x,y)
+
+        # left-most point
+        dx2 = length/2*math.cos(angle-0.3)
+        dy2 = length/2*math.sin(angle-0.3)
+        p2 = Point(x+dx2,y+dy2)
+
+        # furthest point from the center
+        dx3 = length*math.cos(angle)
+        dy3 = length*math.sin(angle)
+        p3 = Point(x+dx3,y+dy3)
+
+        # right-most point
+        dx4 = length/2*math.cos(angle+0.3)
+        dy4 = length/2*math.sin(angle+0.3)
+        p4 = Point(x+dx4,y+dy4)
+
+        # create the diamond-shaped petal
+        petal = Polygon(p1,p2,p3,p4)
+        petal.setFill(petal_color)
+        petal.setOutline(petal_color)
+        return petal
+        
+        
+   
+
+
+    def draw(self, window): #draws all parts in part list of flower
+        for part in self.part_lst: 
+            part.draw(window)   
+            
+        
+    def move(self, dx, dy): 
+        for part in self.part_lst: #moves all parts in part list           
+            part.move(dx, dy)
+
+    def is_above_ground(self, y): #gets center of circle in part list, returns true if flower center is less than height
+        flower_center = self.part_lst[0].getCenter()
+        y_height = flower_center.getY()
+        if y_height < y:
+            return True
+        else:
+            return False
+
+    
+
+
+#------------------
+# HELPER FUNCTIONS
+#------------------
+
+
+
+    
+
+def draw_tree(window, order, x, y, length, angle):
+
+    # compute the coordinates of end of the current branch
+    dx = length * math.cos(angle)
+    dy = length * math.sin(angle)
+    x2 = x + dx
+    y2 = y + dy
+
+    # draw current branch
+    branch = Line(Point(x,y), Point(x2,y2))
+    branch.setFill(branch_color)
+    branch.setWidth(order) # make the higher order branches thicker
+    branch.draw(window)
+
+    # base case: at the leaves, draw a flower
+    if order == 0:
+        flower = Flower(x2,y2)
+        flower.draw(window)
+        flower_lst.append(flower)
+        
+
+    # recursion case: if order > 0, draw two subtrees
+    else:
+        new_len = length*0.7
+        draw_tree(window, order-1, x2, y2, new_len, angle-theta) # "left" branch
+        draw_tree(window, order-1, x2, y2, new_len, angle+theta) # "right" branch
+
+
+#------
+# MAIN
+#------
+
+
+def main():
+    """Draw one tree in the middle of the screen, pointing straight up."""
+
+    # set up the graphics window
+    width = 800
+    height = 600
+    win = GraphWin("Fractal Tree", width, height)
+    win.setBackground(sky_color)
+
+    # set up a rectangle for the ground
+    ground = Rectangle(Point(0,height-80), Point(width,height))
+    ground.setFill(ground_color)
+    ground.setOutline(ground_color)
+    ground.draw(win)
+
+    # set up parameters for our call to the recursive function
+    order = 6
+    x_start = width/2   # middle of the window
+    y_start = height-10 # close to the bottom of the window
+    angle = -math.pi/2  # initial branch (trunk) pointing *upwards*
+    length = 200        # length of initial branch (trunk)
+
+    # call our recursive function
+    draw_tree(win, order, x_start, y_start, length, angle)
+
+
+    for f in flower_lst: #for loop goes through flowers in list
+
+        while f.is_above_ground(height-(random.randint(20,70))): #while loop checks to see if flower_Center y is less than height-20
+            f.move(0, 10) #if true is returned, continues to move
+    
+
+    # close on click
+    win.getMouse()
+    win.close()
+
+
+main()
+
