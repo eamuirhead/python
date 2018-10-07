@@ -1,13 +1,14 @@
-# CSC 111: Final Project
-# Author: Elizabeth Muirhead
-# A program to make the Frogger Game
+"""
+CSC 111: Final Project
+Author: Elizabeth Muirhead
+A program to make the Frogger Game
+"""
 
 from graphics import *
 import random
 
 # GLOBALS
 
-# width and height of window can be access in all functions
 WIDTH = 1200
 HEIGHT = 800
 
