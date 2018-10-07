@@ -9,10 +9,7 @@ import math
 import random
 
 
-#---------
 # GLOBALS
-#---------
-
 
 theta = 0.7 # angle of each branch away from its trunk
 petal_color = "magenta4" # color of the petals
@@ -23,29 +20,20 @@ branch_color = "navy" # color of the branches
 flower_lst = [] #global 
 
 
-
-#---------
 # CLASSES
-#---------
 
-
-# TODO: create Flower class here
-
+# Creases flower object
 class Flower:
-    def __init__(self, x, y): #constructor #initializes instance variable
 
-
+    #constructor #initializes instance variable
+    def __init__(self, x, y): 
         # make a yellow center for the flower
         center = Circle(Point(x,y),2)
         center.setFill(center_color)
         center.setOutline(center_color)
 
-
-
-
         # set petal length and pick a random orientation for the flower
         petal_len = 18
-
         angle = random.uniform(0,2*math.pi)
         
         # make four petals using helper function
@@ -54,13 +42,11 @@ class Flower:
         petal3 = self.make_petal(x, y, petal_len,angle+math.pi)
         petal4 = self.make_petal(x, y, petal_len,angle+3*math.pi/2)
 
+        # list with all the components iof the flower
         self.part_lst = [center, petal1, petal2, petal3, petal4]
 
-
-
+    # builds and returns a petal
     def make_petal(self, x, y, length, angle):
-        
-       
         
         # first point closest to the center
         p1 = Point(x,y)
@@ -85,21 +71,22 @@ class Flower:
         petal.setFill(petal_color)
         petal.setOutline(petal_color)
         return petal
-        
-        
-   
 
 
-    def draw(self, window): #draws all parts in part list of flower
+    # draws all parts in part list of flower
+    def draw(self, window): 
         for part in self.part_lst: 
             part.draw(window)   
-            
         
+        
+    # moves all parts in part list    
     def move(self, dx, dy): 
-        for part in self.part_lst: #moves all parts in part list           
+        for part in self.part_lst:            
             part.move(dx, dy)
 
-    def is_above_ground(self, y): #gets center of circle in part list, returns true if flower center is less than height
+
+    # gets center of circle in part list, returns true if flower center is less than height
+    def is_above_ground(self, y): 
         flower_center = self.part_lst[0].getCenter()
         y_height = flower_center.getY()
         if y_height < y:
@@ -107,17 +94,10 @@ class Flower:
         else:
             return False
 
-    
 
-
-#------------------
 # HELPER FUNCTIONS
-#------------------
 
-
-
-    
-
+# recursively draws a fractal tree
 def draw_tree(window, order, x, y, length, angle):
 
     # compute the coordinates of end of the current branch
@@ -146,13 +126,9 @@ def draw_tree(window, order, x, y, length, angle):
         draw_tree(window, order-1, x2, y2, new_len, angle+theta) # "right" branch
 
 
-#------
 # MAIN
-#------
-
 
 def main():
-    """Draw one tree in the middle of the screen, pointing straight up."""
 
     # set up the graphics window
     width = 800
@@ -160,7 +136,7 @@ def main():
     win = GraphWin("Fractal Tree", width, height)
     win.setBackground(sky_color)
 
-    # set up a rectangle for the ground
+    # draws the ground
     ground = Rectangle(Point(0,height-80), Point(width,height))
     ground.setFill(ground_color)
     ground.setOutline(ground_color)
@@ -173,14 +149,15 @@ def main():
     angle = -math.pi/2  # initial branch (trunk) pointing *upwards*
     length = 200        # length of initial branch (trunk)
 
-    # call our recursive function
+    # calls recursive function to draw tree
     draw_tree(win, order, x_start, y_start, length, angle)
 
-
-    for f in flower_lst: #for loop goes through flowers in list
-
-        while f.is_above_ground(height-(random.randint(20,70))): #while loop checks to see if flower_Center y is less than height-20
-            f.move(0, 10) #if true is returned, continues to move
+    # loops through the flowers
+    for f in flower_lst:
+        # while loop checks to see if flower_Center y is less than height-20
+        while f.is_above_ground(height-(random.randint(20,70))):
+            # while true, flower continues to move down by 10
+            f.move(0, 10) 
     
 
     # close on click
@@ -189,4 +166,3 @@ def main():
 
 
 main()
-
