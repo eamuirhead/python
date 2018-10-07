@@ -1,7 +1,9 @@
-# CSC 111, Lab 9 starter-code
-# Author: Sara Mathieson (modified from Lab 8 solution)
-# Author: Elizabeth Muirhead and Maddy Kulke
-# A program to draw a fractal tree using recursion.
+"""
+CSC 111, Lab 9
+Author: Sara Mathieson (modified from Lab 8 solution)
+Author: Elizabeth Muirhead and Maddy Kulke
+A program to draw a fractal tree using recursion.
+"""
 
 
 from graphics import *
@@ -25,7 +27,7 @@ flower_lst = [] #global
 # Creases flower object
 class Flower:
 
-    #constructor #initializes instance variable
+    #initializes instance variable
     def __init__(self, x, y): 
         # make a yellow center for the flower
         center = Circle(Point(x,y),2)
