@@ -27,7 +27,7 @@ def draw_road(window):
     # passes road_lines into function that draws the yellow dividers
     street_lines(road_line1, road_line2, window)
     
-# draws yellow dividers 
+# draws yellow dividers on street
 def street_lines(road_line1, road_line2, window):
 
     center = int((road_line1 + road_line2)/2)
